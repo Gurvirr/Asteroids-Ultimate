@@ -35,9 +35,9 @@ while run_program:
     keys = py.key.get_pressed()
 
     if keys[py.K_a]:
-        arrow_angle += 2
+        arrow_angle += 3.5
     elif keys[py.K_d]:
-        arrow_angle -= 2
+        arrow_angle -= 3.5
 
     if keys[py.K_w]:
         angle_in_radians = math.radians(arrow_angle)

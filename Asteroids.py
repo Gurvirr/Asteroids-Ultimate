@@ -7,15 +7,15 @@ py.display.set_caption("Asteroids")
 clock = py.time.Clock()
 
 pxl = 64
-w, h = 800, 800
-
+w, h = 1200, 800
+counter = 0
 screen = py.display.set_mode((w, h))
 
 x, y = 400, 400
 x_speed, y_speed = 0, 0
  # Initial acceleration rate
 vel = 0
-max_vel = 0.3  # Maximum velocity
+max_vel = 5  # Maximum velocity
 acceleration = 0.005  # Rate of acceleration increase
 
 arrow = py.image.load("Arrow.png").convert_alpha()
@@ -34,45 +34,51 @@ while run_program:
         if event.type == py.KEYDOWN:
             if event.key == py.K_ESCAPE:
                 run_program = False
+            if event.key == py.K_SPACE:
+                print("hello")
 
     keys = py.key.get_pressed()
 
     if keys[py.K_a]:
-        arrow_angle += 2
+        arrow_angle += 3
     elif keys[py.K_d]:
-        arrow_angle -= 2
+        arrow_angle -= 3
 
     if keys[py.K_w]:
         angle_in_radians = math.radians(arrow_angle)
-        if vel < max_vel:
-            x_speed += -vel * math.sin(angle_in_radians)
-            y_speed += -vel * math.cos(angle_in_radians)
+        if x_speed > -9 or y_speed > -9:
+            x_speed += -vel
+            y_speed += -vel
             vel += acceleration
 
     elif keys[py.K_s]:
         angle_in_radians = math.radians(arrow_angle)
-        if vel < max_vel:
-            x_speed += vel * math.sin(angle_in_radians)
-            y_speed += vel * math.cos(angle_in_radians)
+        if x_speed < 9 or y_speed < 9:
+            x_speed += vel
+            y_speed += vel
             vel += acceleration
-
+    
     else:
         # Reset acceleration when not pressing "W" or "S"
         vel = 0
         x_speed *= deceleration
         y_speed *= deceleration
+        if -0.3 < x_speed < 0.3 or -0.3 < y_speed < 0.3:
+            x_speed = 0
+            y_speed = 0
 
-    if x < -64:
-        x = w + 64
-    if x > w + 64:
-        x = -64
-    if y < -64:
-        y = h + 64
-    if y > h + 64:
-        y = -64
-        
-    x += x_speed 
-    y += y_speed
+    if x < -32:
+        x = w + 32
+    if x > w + 32:
+        x = -32
+    if y < -32:
+        y = h + 32
+    if y > h + 32:
+        y = -32
+
+    angle_in_radians = math.radians(arrow_angle)
+    x += x_speed * math.sin(angle_in_radians)
+    y += y_speed * math.cos(angle_in_radians)
     
     rotated_arrow = py.transform.rotozoom(arrow, arrow_angle, 1)
     rotated_glow = py.transform.rotozoom(glow, arrow_angle, 1)
