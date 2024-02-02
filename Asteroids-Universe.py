@@ -47,10 +47,6 @@ while active:
         if event.type == py.KEYDOWN:
             if event.key == py.K_ESCAPE:
                 active = False
-            if event.key == py.K_SPACE or event.key == py.K_q:
-                bullet_angle = angle
-                bullet_x, bullet_y = rotated_arrow_rect.center
-                bullet_positions.append([bullet_x, bullet_y, bullet_angle])
 
     keys = py.key.get_pressed()
 
@@ -60,6 +56,10 @@ while active:
     elif keys[py.K_d]:
         angle -= 3
 
+    if keys[py.K_SPACE] or keys[py.K_q]:
+        bullet_angle = angle
+        bullet_x, bullet_y = rotated_arrow_rect.center
+        bullet_positions.append([bullet_x, bullet_y, bullet_angle])
     # Player movement
     if keys[py.K_w]:
         if x_speed > -9 or y_speed > -9:
@@ -107,8 +107,9 @@ while active:
         rotated_bullet_rect = rotated_bullet.get_rect(center = (bullet[0], bullet[1]))
         screen.blit(rotated_bullet, rotated_bullet_rect)
 
-        if bullet[0] < 0 or bullet[0] > 1200 or bullet[1] < 0 or bullet[1] > 800:
-            bullet_positions.remove(bullet)
+        if bullet[0] < 1200 or bullet[0] > 0 or bullet[1] < 800 or bullet[1] > 0:
+            bullet[0] *= -1
+            bullet[1] *= -1
     
     # Rotation handler
     rotated_arrow = py.transform.rotozoom(arrow_img, angle, 1)
@@ -123,6 +124,6 @@ while active:
     render_text(str(angle), 10, 40)
     
     py.display.update()
-    clock.tick(100)
+    clock.tick(10000)
 
 py.quit()
