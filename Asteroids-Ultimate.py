@@ -34,6 +34,9 @@ arrow_img = py.image.load("assets/Arrow.png").convert_alpha()
 glow_img = py.image.load("assets/Glow.png").convert_alpha()
 bullet_img = py.image.load("assets/Bullet.png").convert_alpha()
 
+# Audio handler
+bullet_sfx = py.mixer.Sound("assets/bullet_sfx.wav")
+
 active = True
 
 # Game loop
@@ -51,6 +54,7 @@ while active:
                 bullet_angle = angle
                 bullet_x, bullet_y = rotated_arrow_rect.center
                 bullet_positions.append([bullet_x, bullet_y, bullet_angle])
+                bullet_sfx.play()
 
     keys = py.key.get_pressed()
 
@@ -99,6 +103,9 @@ while active:
     x += x_speed * math.sin(angle_in_radians)
     y += y_speed * math.cos(angle_in_radians)
     
+    # TEST CODE
+    colour = (97, 212, 97)
+    
     # Bullet handler
     for bullet in bullet_positions:
         bullet[0] -= 9.5 * math.sin(math.radians(bullet[2]))
@@ -107,15 +114,24 @@ while active:
         rotated_bullet_rect = rotated_bullet.get_rect(center = (bullet[0], bullet[1]))
         screen.blit(rotated_bullet, rotated_bullet_rect)
 
+        # Bullet culling
         if bullet[0] < 0 or bullet[0] > 1200 or bullet[1] < 0 or bullet[1] > 800:
             bullet_positions.remove(bullet)
-    
+
+        # Bullet collision handler
+        if rotated_bullet_rect.colliderect(asteroid):
+            colour = (255, 0, 0)
+
+    # TEST CODE
+    asteroid = py.Rect(300, 300, 60, 60)
+    py.draw.rect(screen, colour, asteroid)
+            
     # Rotation handler
     rotated_arrow = py.transform.rotozoom(arrow_img, angle, 1)
     rotated_glow = py.transform.rotozoom(glow_img, angle, 1)
     rotated_arrow_rect = rotated_arrow.get_rect(center = (x, y))
     rotated_glow_rect = rotated_glow.get_rect(center = (x, y))
-    
+
     # Display handler
     screen.blit(rotated_arrow, rotated_arrow_rect)
     screen.blit(rotated_glow, rotated_glow_rect)
