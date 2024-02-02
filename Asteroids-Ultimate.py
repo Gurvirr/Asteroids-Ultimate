@@ -5,7 +5,7 @@ import math
 py.init()
 py.display.set_caption("Asteroids")
 clock = py.time.Clock()
-font = py.freetype.Font("FiraMono-Medium.ttf", 20)
+font = py.freetype.Font("assets/FiraMono-Medium.ttf", 20)
 
 # Screen setup
 w, h = 1200, 800
@@ -22,6 +22,7 @@ def render_text(text, x, y):
 # Player info
 x, y = 600, 400
 x_speed, y_speed = 0, 0
+sprite_w, sprite_h = 48, 64
 vel = 0
 acceleration = 0.005
 angle = 0
@@ -29,11 +30,9 @@ deceleration = 0.98
 bullet_positions = []
 
 # Image handler
-arrow_img = py.image.load("Arrow.png").convert_alpha()
-glow_img = py.image.load("Glow.png").convert_alpha()
-bullet_img = py.image.load("Bullet2.png").convert_alpha()
-
-# mask = py.mask.from_surface(bullet_img)
+arrow_img = py.image.load("assets/Arrow.png").convert_alpha()
+glow_img = py.image.load("assets/Glow.png").convert_alpha()
+bullet_img = py.image.load("assets/Bullet.png").convert_alpha()
 
 active = True
 
@@ -50,7 +49,7 @@ while active:
                 active = False
             if event.key == py.K_SPACE or event.key == py.K_q:
                 bullet_angle = angle
-                bullet_x, bullet_y = rotated_arrow_rect.topleft
+                bullet_x, bullet_y = rotated_arrow_rect.center
                 bullet_positions.append([bullet_x, bullet_y, bullet_angle])
 
     keys = py.key.get_pressed()
@@ -86,14 +85,14 @@ while active:
             y_speed = 0
 
     # Boundary teleportation
-    if x < -50:
-        x = w + 50
-    if x > w + 50:
-        x = -50
-    if y < -50:
-        y = h + 50
-    if y > h + 50:
-        y = -50
+    if x < -sprite_w:
+        x = w + sprite_w
+    if x > w + sprite_w:
+        x = -sprite_w
+    if y < -sprite_h:
+        y = h + sprite_h
+    if y > h + sprite_h:
+        y = -sprite_h
     
     # Position handler
     angle_in_radians = math.radians(angle)
@@ -102,11 +101,11 @@ while active:
     
     # Bullet handler
     for bullet in bullet_positions:
-        # overlap_mask = mask.overlap_mask(mask, ())
         bullet[0] -= 9.5 * math.sin(math.radians(bullet[2]))
         bullet[1] -= 9.5 * math.cos(math.radians(bullet[2]))
         rotated_bullet = py.transform.rotozoom(bullet_img, bullet[2], 1)
-        screen.blit(rotated_bullet, py.Rect(bullet[0], bullet[1], 0, 0))
+        rotated_bullet_rect = rotated_bullet.get_rect(center = (bullet[0], bullet[1]))
+        screen.blit(rotated_bullet, rotated_bullet_rect)
     
     # Rotation handler
     rotated_arrow = py.transform.rotozoom(arrow_img, angle, 1)
