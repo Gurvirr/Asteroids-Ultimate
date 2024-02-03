@@ -8,7 +8,7 @@ clock = py.time.Clock()
 font = py.freetype.Font("assets/FiraMono-Medium.ttf", 20)
 
 # Screen setup
-w, h = 1200, 800
+w, h = 1920, 1080
 screen = py.display.set_mode((w, h))
 
 # Colours
@@ -31,8 +31,8 @@ bullet_positions = []
 
 # Image handler
 arrow_img = py.image.load("assets/Arrow.png").convert_alpha()
-glow_img = py.image.load("assets/Glow.png").convert_alpha()
-bullet_img = py.image.load("assets/Bullet.png").convert_alpha()
+arrow_glow_img = py.image.load("assets/Arrow Glow.png").convert_alpha()
+bullet_img = py.image.load("assets/Bullet-Small.png").convert_alpha()
 
 active = True
 
@@ -60,6 +60,7 @@ while active:
         bullet_angle = angle
         bullet_x, bullet_y = rotated_arrow_rect.center
         bullet_positions.append([bullet_x, bullet_y, bullet_angle])
+    
     # Player movement
     if keys[py.K_w]:
         if x_speed > -9 or y_speed > -9:
@@ -107,19 +108,19 @@ while active:
         rotated_bullet_rect = rotated_bullet.get_rect(center = (bullet[0], bullet[1]))
         screen.blit(rotated_bullet, rotated_bullet_rect)
 
-        if bullet[0] < 1200 or bullet[0] > 0 or bullet[1] < 800 or bullet[1] > 0:
+        if bullet[0] < w or bullet[0] > 0 or bullet[1] < h or bullet[1] > 0:
             bullet[0] *= -1
             bullet[1] *= -1
     
     # Rotation handler
     rotated_arrow = py.transform.rotozoom(arrow_img, angle, 1)
-    rotated_glow = py.transform.rotozoom(glow_img, angle, 1)
+    rotated_arrow_glow = py.transform.rotozoom(arrow_glow_img, angle, 1)
     rotated_arrow_rect = rotated_arrow.get_rect(center = (x, y))
-    rotated_glow_rect = rotated_glow.get_rect(center = (x, y))
+    rotated_arrow_glow_rect = rotated_arrow_glow.get_rect(center = (x, y))
     
     # Display handler
     screen.blit(rotated_arrow, rotated_arrow_rect)
-    screen.blit(rotated_glow, rotated_glow_rect)
+    screen.blit(rotated_arrow_glow, rotated_arrow_glow_rect)
     render_text(str(rotated_arrow_rect.center), 10, 10)
     render_text(str(angle), 10, 40)
     
