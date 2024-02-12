@@ -20,7 +20,7 @@ def render_text(text, x, y):
     font.render_to(screen, (x, y), text, white)
 
 # Player info
-x, y = 600, 400
+x, y = w/2, h/2
 x_speed, y_speed = 0, 0
 sprite_w, sprite_h = 48, 64
 vel = 0
@@ -28,6 +28,9 @@ acceleration = 0.005
 angle = 0   
 deceleration = 0.98
 bullet_positions = []
+shot_time = 0
+bullet_delay = 80
+angle_offsets = [offset for offset in range(-180, 181, 15)]
 
 # Image handler
 arrow_img = py.image.load("assets/Arrow.png").convert_alpha()
@@ -51,10 +54,22 @@ while active:
         if event.type == py.KEYDOWN:
             if event.key == py.K_ESCAPE:
                 active = False
+            
+            # Bullet - Regular
             if event.key == py.K_SPACE or event.key == py.K_q:
                 bullet_angle = angle
                 bullet_x, bullet_y = rotated_arrow_rect.center
                 bullet_positions.append([bullet_x, bullet_y, bullet_angle])
+                bullet_sfx.play()
+
+            # Bullet - Pulse
+            if event.key == py.K_e:
+                shots = 0
+                while shots < len(angle_offsets):
+                    bullet_angle = angle + angle_offsets[shots]
+                    bullet_x, bullet_y = rotated_arrow_rect.center
+                    bullet_positions.append([bullet_x, bullet_y, bullet_angle])
+                    shots += 1
                 bullet_sfx.play()
 
     keys = py.key.get_pressed()
@@ -111,10 +126,13 @@ while active:
     for bullet in bullet_positions:
         bullet[0] -= 9.5 * math.sin(math.radians(bullet[2]))
         bullet[1] -= 9.5 * math.cos(math.radians(bullet[2]))
+        
         rotated_bullet = py.transform.rotozoom(bullet_img, bullet[2], 1)
         rotated_bullet_glow = py.transform.rotozoom(bullet_glow_img, bullet[2], 1)
+        
         rotated_bullet_rect = rotated_bullet.get_rect(center = (bullet[0], bullet[1]))
         rotated_bullet_glow_rect = rotated_bullet_glow.get_rect(center = (bullet[0], bullet[1]))
+        
         screen.blit(rotated_bullet_glow, rotated_bullet_glow_rect)
         screen.blit(rotated_bullet, rotated_bullet_rect)
         
@@ -133,12 +151,14 @@ while active:
     # Rotation handler
     rotated_arrow = py.transform.rotozoom(arrow_img, angle, 1)
     rotated_arrow_glow = py.transform.rotozoom(arrow_glow_img, angle, 1)
+    
     rotated_arrow_rect = rotated_arrow.get_rect(center = (x, y))
     rotated_arrow_glow_rect = rotated_arrow_glow.get_rect(center = (x, y))
 
     # Display handler
     screen.blit(rotated_arrow, rotated_arrow_rect)
     screen.blit(rotated_arrow_glow, rotated_arrow_glow_rect)
+    
     render_text(str(rotated_arrow_rect.center), 10, 10)
     render_text(str(angle), 10, 40)
     
